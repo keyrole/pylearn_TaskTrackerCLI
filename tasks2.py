@@ -4,7 +4,7 @@ from typing import TextIO
 import time
 
 STATUS = ('new', 'in-progress', 'done')
-PATH = 'tasks.json'
+PATH = 'tasks2.json'
 Tasks = list(dict())
 
 
