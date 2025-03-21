@@ -1,11 +1,12 @@
 import json
 import argparse
 from typing import TextIO
+import time
 
 STATUS = ('new', 'in-progress', 'done')
 PATH = 'tasks.json'
 Tasks = list(dict())
-ID = 1
+
 
 def get_parse():
     parser = argparse.ArgumentParser()
@@ -26,10 +27,10 @@ def get_parse():
     return parser
 
 def format_print(tasks):
-    print(f'\n  {"ID": <5}{"Item": <25}\t{"Status"}\n')
-    print(f'  ---------------------------------------------\n')
+    print(f'\n  {"ID": <5}{"Item": <25}\t{"Status": <11}\t{"createdAt"}\t\t{"updatedAt"}\n')
+    print(f'  ------------------------------------------------------------------------------------------\n')
     for task in tasks:
-        print(f'  {task["id"]: <5}{task["name"]: <25}\t{task["status"]}\n')
+        print(f'  {task["id"]: <5}{task["name"]: <25}\t{task["status"]: <11}\t{task["createdAt"]}\t{task["updatedAt"]}\n')
 
 def main() -> None:
     parser = get_parse()
@@ -49,12 +50,14 @@ def main() -> None:
 
     if len(Tasks) != 0:
         ID= max([task['id'] for task in Tasks]) + 1
+    else:
+        ID = 1
 
     if args['command'] == 'add':
         if args['name'] in [task['name'] for task in Tasks]:
             print(f"Error: {args['name']} already exists")
         else:
-            Tasks.append({'id':ID, 'name': args['name'], 'status': STATUS[0]})
+            Tasks.append({'id':ID, 'name': args['name'], 'status': STATUS[0], 'createdAt': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), 'updatedAt': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())})
             with open(PATH, 'w') as f:
                 json.dump(Tasks, f)
 
@@ -74,6 +77,7 @@ def main() -> None:
             for task in Tasks:
                 if task['id'] == args['id']:
                     task['status'] = args['status']
+                    task['updatedAt'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                     break
             with open(PATH, 'w') as f:
                 json.dump(Tasks, f)
